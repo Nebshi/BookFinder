@@ -1,0 +1,291 @@
+{
+	"id": "19d89d70-b021-45c5-b8c9-985d15a28940",
+	"name": "Book Finder",
+	"timestamp": "2024-09-02T10:04:04.488Z",
+	"collection_id": "32582062-29e2d34e-615a-4b06-8b28-6f4293603703",
+	"folder_id": 0,
+	"environment_id": "32582062-005dd128-e0ae-4c2b-a314-cd8ed00d30ac",
+	"totalPass": 24,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2024-09-02T10:04:01.576Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "00f66681-c70b-4072-a1fc-06c35d39b8c3",
+			"name": "Get All Books",
+			"url": "http://localhost:3000/api/books?page=1&limit=10",
+			"time": 377,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Response contains pagination info": true,
+				"Pagination works correctly": true,
+				"Filter by title": true,
+				"Invalid page number": true,
+				"Invalid limit number": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains pagination info": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Pagination works correctly": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Filter by title": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid page number": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid limit number": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				377
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Response contains pagination info": true,
+					"Pagination works correctly": true,
+					"Filter by title": true,
+					"Invalid page number": true,
+					"Invalid limit number": true
+				}
+			]
+		},
+		{
+			"id": "174e37f0-b1fa-4183-bfa3-56f2dd8c9e2d",
+			"name": "Get Book by id",
+			"url": "http://localhost:3000/api/books/66d53f9c29ce50d72d9b043c",
+			"time": 188,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Response contains book details": true,
+				"Invalid book ID format": true,
+				"Non-existent book ID": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response contains book details": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid book ID format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Non-existent book ID": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				188
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Response contains book details": true,
+					"Invalid book ID format": true,
+					"Non-existent book ID": true
+				}
+			]
+		},
+		{
+			"id": "4a7ae1d3-9296-4fb6-b446-79c6a4d33a4a",
+			"name": "Add Book",
+			"url": "http://localhost:3000/api/books",
+			"time": 202,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Status code is 201": true,
+				"Response is JSON": true,
+				"Missing required fields": true,
+				"Invalid date format": true
+			},
+			"testPassFailCounts": {
+				"Status code is 201": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Missing required fields": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid date format": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				202
+			],
+			"allTests": [
+				{
+					"Status code is 201": true,
+					"Response is JSON": true,
+					"Missing required fields": true,
+					"Invalid date format": true
+				}
+			]
+		},
+		{
+			"id": "ab5a0cdc-123e-4081-afbe-9cf348521237",
+			"name": "Update Book",
+			"url": "http://localhost:3000/api/books/66d53f9c29ce50d72d9b0410",
+			"time": 172,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found"
+			},
+			"tests": {
+				"Status code is 404": true,
+				"Response is JSON": true,
+				"Invalid book ID format": true,
+				"Non-existent book ID": true
+			},
+			"testPassFailCounts": {
+				"Status code is 404": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid book ID format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Non-existent book ID": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				172
+			],
+			"allTests": [
+				{
+					"Status code is 404": true,
+					"Response is JSON": true,
+					"Invalid book ID format": true,
+					"Non-existent book ID": true
+				}
+			]
+		},
+		{
+			"id": "2ff416e1-369c-49b8-aede-39281ec99634",
+			"name": "Delete Book",
+			"url": "http://localhost:3000/api/books/66d58d045b7312a810d5b971",
+			"time": 173,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Invalid book ID format": true,
+				"Non-existent book ID": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid book ID format": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Non-existent book ID": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				173
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Invalid book ID format": true,
+					"Non-existent book ID": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 1112,
+	"collection": {
+		"requests": [
+			{
+				"id": "00f66681-c70b-4072-a1fc-06c35d39b8c3",
+				"method": "GET"
+			},
+			{
+				"id": "174e37f0-b1fa-4183-bfa3-56f2dd8c9e2d",
+				"method": "GET"
+			},
+			{
+				"id": "4a7ae1d3-9296-4fb6-b446-79c6a4d33a4a",
+				"method": "POST"
+			},
+			{
+				"id": "ab5a0cdc-123e-4081-afbe-9cf348521237",
+				"method": "PUT"
+			},
+			{
+				"id": "2ff416e1-369c-49b8-aede-39281ec99634",
+				"method": "DELETE"
+			}
+		]
+	}
+}

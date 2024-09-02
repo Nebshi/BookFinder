@@ -1,0 +1,1557 @@
+{
+	"info": {
+		"_postman_id": "29e2d34e-615a-4b06-8b28-6f4293603703",
+		"name": "Book Finder",
+		"description": "An API that searches for books based on criteria such as title, author, genre and publication date and provides information about books and ratings.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32582062",
+		"_collection_link": "https://testallapis.postman.co/workspace/05f02568-635d-4870-8c25-6c10f26f89f2/collection/32582062-29e2d34e-615a-4b06-8b28-6f4293603703?action=share&source=collection_link&creator=32582062"
+	},
+	"item": [
+		{
+			"name": "Get All Books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status is 200 OK\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response type is JSON\r",
+							"pm.test(\"Response is JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Verify that response contains pagination info\r",
+							"pm.test(\"Response contains pagination info\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.property('totalBooks');\r",
+							"    pm.expect(response).to.have.property('totalPages');\r",
+							"    pm.expect(response).to.have.property('currentPage');\r",
+							"    pm.expect(response).to.have.property('books');\r",
+							"});\r",
+							"\r",
+							"// Ensure that pagination works correctly\r",
+							"pm.test(\"Pagination works correctly\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    const limit = parseInt(pm.request.url.query.find(q => q.key === 'limit').value, 10);\r",
+							"    pm.expect(response.books).to.have.lengthOf.at.most(limit);\r",
+							"});\r",
+							"\r",
+							"// Test with filters\r",
+							"pm.test(\"Filter by title\", function () {\r",
+							"    const title = \"Sample Book\";\r",
+							"\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books?title=\" + encodeURIComponent(title),\r",
+							"        method: 'GET',\r",
+							"        header: pm.request.headers,\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(200);\r",
+							"\r",
+							"        const response = res.json();\r",
+							"        pm.expect(response.books).to.be.an('array');\r",
+							"        response.books.forEach(book => {\r",
+							"            pm.expect(book.title).to.include(title);\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Test with invalid page number\r",
+							"pm.test(\"Invalid page number\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books?page=-1\",\r",
+							"        method: 'GET',\r",
+							"        header: pm.request.headers,\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(400);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Invalid page number. It should be a positive integer.');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Test with invalid limit number\r",
+							"pm.test(\"Invalid limit number\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books?limit=0\",\r",
+							"        method: 'GET',\r",
+							"        header: pm.request.headers,\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(400);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Invalid limit number. It should be a positive integer.');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/books?page=1&limit=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "benevolentia cursus venustas",
+							"disabled": true
+						},
+						{
+							"key": "author",
+							"value": "Vance Zboncak",
+							"disabled": true
+						},
+						{
+							"key": "genre",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "rating",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "publicationDate",
+							"value": "12-09-2022",
+							"description": "YYYY-MM-DD",
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "100",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful 200",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io?page=1&limit=10",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"query": [
+								{
+									"key": "author",
+									"value": "Vance Zboncak",
+									"disabled": true
+								},
+								{
+									"key": "genre",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "rating",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "publicationDate",
+									"value": "12-09-2022",
+									"description": "YYYY-MM-DD",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 07:02:21 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725261442"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "81"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"51-7VIbcKPePJ4I/GK0O17u1SlSEJk\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"totalBooks\": 100,\n    \"totalPages\": 10,\n    \"currentPage\": 1,\n    \"books\": [\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b043c\",\n            \"title\": \"benevolentia cursus venustas\",\n            \"author\": \"Vance Zboncak\",\n            \"genre\": \"Science Fiction\",\n            \"publicationDate\": \"2015-12-05T00:36:34.601Z\",\n            \"rating\": 0.9,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b043d\",\n            \"title\": \"canis tersus basium\",\n            \"author\": \"Delia Lockman\",\n            \"genre\": \"Biography\",\n            \"publicationDate\": \"2018-12-24T22:52:49.684Z\",\n            \"rating\": 0.8,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b043e\",\n            \"title\": \"denego creber despecto\",\n            \"author\": \"Reinhold Cartwright\",\n            \"genre\": \"Mystery\",\n            \"publicationDate\": \"2017-02-04T10:14:31.831Z\",\n            \"rating\": 0.2,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b043f\",\n            \"title\": \"sperno balbus versus\",\n            \"author\": \"Kenya Powlowski\",\n            \"genre\": \"Biography\",\n            \"publicationDate\": \"2020-08-14T01:22:43.296Z\",\n            \"rating\": 0.1,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b0440\",\n            \"title\": \"unus quidem defendo\",\n            \"author\": \"Mac Beer\",\n            \"genre\": \"Biography\",\n            \"publicationDate\": \"2021-10-28T22:55:58.314Z\",\n            \"rating\": 0.3,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b0441\",\n            \"title\": \"appono cubicularis summopere\",\n            \"author\": \"Lela Howe\",\n            \"genre\": \"Fiction\",\n            \"publicationDate\": \"2021-01-01T04:07:48.895Z\",\n            \"rating\": 0.5,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b0442\",\n            \"title\": \"aranea vitium curtus\",\n            \"author\": \"Vernon Sawayn\",\n            \"genre\": \"Non-fiction\",\n            \"publicationDate\": \"2022-09-23T20:51:17.953Z\",\n            \"rating\": 1,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b0443\",\n            \"title\": \"adversus communis canto\",\n            \"author\": \"Assunta Jerde\",\n            \"genre\": \"Fantasy\",\n            \"publicationDate\": \"2016-09-22T03:18:46.431Z\",\n            \"rating\": 0.3,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b0444\",\n            \"title\": \"debitis abbas repudiandae\",\n            \"author\": \"Hillary Stanton\",\n            \"genre\": \"Non-fiction\",\n            \"publicationDate\": \"2016-11-23T03:58:28.640Z\",\n            \"rating\": 0.4,\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b0445\",\n            \"title\": \"fuga tamisium usus\",\n            \"author\": \"Theo Labadie\",\n            \"genre\": \"Mystery\",\n            \"publicationDate\": \"2017-02-14T18:34:50.463Z\",\n            \"rating\": 0.9,\n            \"__v\": 0\n        }\n    ]\n}"
+				},
+				{
+					"name": "Successful 200 with filters",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io?title=benevolentia cursus venustas",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "12",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "benevolentia cursus venustas"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 07:02:21 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725261442"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "81"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"51-7VIbcKPePJ4I/GK0O17u1SlSEJk\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"totalBooks\": 1,\n    \"totalPages\": 1,\n    \"currentPage\": 1,\n    \"books\": [\n        {\n            \"_id\": \"66d53f9c29ce50d72d9b043c\",\n            \"title\": \"benevolentia cursus venustas\",\n            \"author\": \"Vance Zboncak\",\n            \"genre\": \"Science Fiction\",\n            \"publicationDate\": \"2015-12-05T00:36:34.601Z\",\n            \"rating\": 0.9,\n            \"__v\": 0\n        }\n    ]\n}"
+				},
+				{
+					"name": "Failure 400",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/?page=12",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "12"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 07:02:21 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725261442"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "81"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"51-7VIbcKPePJ4I/GK0O17u1SlSEJk\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Page number exceeds total pages. There are only 1 pages available.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Book by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status is 200 OK\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response type is JSON\r",
+							"pm.test(\"Response is JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Check if the book details are correct\r",
+							"pm.test(\"Response contains book details\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.property('title');\r",
+							"    pm.expect(response).to.have.property('author');\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the book ID\r",
+							"pm.test(\"Invalid book ID format\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books/invalidId\",\r",
+							"        method: 'GET',\r",
+							"        header: pm.request.headers\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(400);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Invalid book ID format.');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Check if the response book has the required fields\r",
+							"pm.test(\"Non-existent book ID\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books/60d1b1f24f1a2c001f9b25ab\", // Replace with a non-existent but valid ID\r",
+							"        method: 'GET',\r",
+							"        header: pm.request.headers\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(404);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Book not found.');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/books/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "66d53f9c29ce50d72d9b043c"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful 200",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d53f9c29ce50d72d9b043"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 08:11:30 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725265591"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "29"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1d-+fAY67Ezt65JS2TEbiytEFs0BWQ\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid book ID format.\"\n}"
+				},
+				{
+					"name": "Failure 400",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d53f9c29ce50d72d9b043c"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 08:11:30 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725265591"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "29"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1d-+fAY67Ezt65JS2TEbiytEFs0BWQ\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid book ID format.\"\n}"
+				},
+				{
+					"name": "Failure 404",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d53f9c29ce50d72d9b0432"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 08:11:30 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725265591"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "29"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1d-+fAY67Ezt65JS2TEbiytEFs0BWQ\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Book not found.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Add Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status is 201 Created\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// Check if the response type is JSON\r",
+							"pm.test(\"Response is JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Test with missing required fields\r",
+							"pm.test(\"Missing required fields\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books\",\r",
+							"        method: 'POST',\r",
+							"        header: {\r",
+							"            'Content-Type': 'application/json'\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify({\r",
+							"                \"title\": \"New Book\",\r",
+							"                \"author\": \"Author Name\"\r",
+							"                // \"genre\" is missing\r",
+							"            })\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(400);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Title, author, and genre are required.');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Test with invalid date format\r",
+							"pm.test(\"Invalid date format\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books\",\r",
+							"        method: 'POST',\r",
+							"        header: {\r",
+							"            'Content-Type': 'application/json'\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify({\r",
+							"                \"title\": \"New Book\",\r",
+							"                \"author\": \"Author Name\",\r",
+							"                \"genre\": \"Fiction\",\r",
+							"                \"publicationDate\": \"2024-09-31\" // Invalid date\r",
+							"            })\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(400);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Invalid date format. Please use YYYY-MM-DD format.');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"title\": \"Sample Book\",\r\n  \"author\": \"John Doe\",\r\n  \"genre\": \"Fiction\",\r\n  \"publicationDate\": \"2023-09-30\",      //YYYY-MM-DD\r\n  \"rating\": 4.5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Created 201",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Sample Book\",\r\n  \"author\": \"John Doe\",\r\n  \"genre\": \"Fiction\",\r\n  \"publicationDate\": \"2023-09-30\",      //YYYY-MM-DD\r\n  \"rating\": 4.5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "94"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 06:40:36 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725260009"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "160"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"a0-eMcp8jrPqMn8n2oE6nFMXKyYy18\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"title\": \"Sample Book\",\n    \"author\": \"John Doe\",\n    \"genre\": \"Fiction\",\n    \"publicationDate\": \"2023-09-30T00:00:00.000Z\",\n    \"rating\": 4.5,\n    \"_id\": \"66d55de43e98fb10d04e86f1\",\n    \"__v\": 0\n}"
+				},
+				{
+					"name": "Failure 400",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Sample Book\",\r\n  \"author\": \"John Doe\",\r\n  \"genre\": \"Fiction\",\r\n  \"publicationDate\": \"2023-09-30\",      //YYYY-MM-DD\r\n  \"rating\": 4.5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "94"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 06:40:36 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725260009"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "160"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"a0-eMcp8jrPqMn8n2oE6nFMXKyYy18\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Title, author, and genre are required.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Update Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status is 404 Not Found\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"// Check if the response type is JSON\r",
+							"pm.test(\"Response is JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Test with invalid book ID format\r",
+							"pm.test(\"Invalid book ID format\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books/invalidId\",\r",
+							"        method: 'PUT',\r",
+							"        header: {\r",
+							"            'Content-Type': 'application/json'\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(400);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Invalid book ID format.');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Test with non-existent book ID\r",
+							"pm.test(\"Non-existent book ID\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books/66d53f9c29ce50d72d9b0410\",\r",
+							"        method: 'PUT',\r",
+							"        header: {\r",
+							"            'Content-Type': 'application/json'\r",
+							"        },\r",
+							"        body: {\r",
+							"            mode: 'raw',\r",
+							"            raw: JSON.stringify({\r",
+							"                \"title\": \"Updated Book Title\",\r",
+							"                \"author\": \"Updated Author Name\",\r",
+							"                \"genre\": \"Updated Genre\",\r",
+							"                \"publicationDate\": \"2023-09-01\"\r",
+							"            })\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        console.log(err)\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(404);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Book not found.');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// Minimum one field id required\r\n\r\n{\r\n  \"title\": \"Sample Book\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/books/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "66d53f9c29ce50d72d9b0410"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful 200",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// Minimum one field id required\r\n\r\n{\r\n  \"title\": \"Sample Book\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d57d71631627599456916c"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "94"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 06:40:36 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725260009"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "160"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"a0-eMcp8jrPqMn8n2oE6nFMXKyYy18\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"title\": \"Sample Book\",\n    \"author\": \"John Doe\",\n    \"genre\": \"Fiction\",\n    \"publicationDate\": \"2023-09-30T00:00:00.000Z\",\n    \"rating\": 4.5,\n    \"_id\": \"66d55de43e98fb10d04e86f1\",\n    \"__v\": 0\n}"
+				},
+				{
+					"name": "Failure 400",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d57d71631627599456916c"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "94"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 06:40:36 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725260009"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "160"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"a0-eMcp8jrPqMn8n2oE6nFMXKyYy18\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"At least one field must be provided for update.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Delete Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status is 200 OK\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response type is JSON\r",
+							"pm.test(\"Response is JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Test with invalid book ID format\r",
+							"pm.test(\"Invalid book ID format\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books/invalidId\",\r",
+							"        method: 'DELETE',\r",
+							"        header: pm.request.headers\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(400);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Invalid book ID format.');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Test with non-existent book ID\r",
+							"pm.test(\"Non-existent book ID\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: \"http://localhost:3000\" + \"/api/books/60d1b1f24f1a2c001f9b25ab\", // Replace with a non-existent but valid ID\r",
+							"        method: 'DELETE',\r",
+							"        header: pm.request.headers\r",
+							"    }, function (err, res) {\r",
+							"        pm.expect(err).to.be.null;\r",
+							"        pm.expect(res).to.have.status(404);\r",
+							"        const jsonResponse = res.json();\r",
+							"        pm.expect(jsonResponse.message).to.eql('Book not found.');\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/books/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "66d58d045b7312a810d5b971"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Successful 200",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d57d71631627599456916c"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 08:11:30 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725265591"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "29"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1d-+fAY67Ezt65JS2TEbiytEFs0BWQ\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Book deleted successfully.\"\n}"
+				},
+				{
+					"name": "Failure 400",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d57d71631627599456916"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 08:11:30 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725265591"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "29"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1d-+fAY67Ezt65JS2TEbiytEFs0BWQ\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Invalid book ID format.\"\n}"
+				},
+				{
+					"name": "Failure 404",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://97145926-0f31-47aa-a81b-21ce204d7329.mock.pstmn.io/:id",
+							"protocol": "https",
+							"host": [
+								"97145926-0f31-47aa-a81b-21ce204d7329",
+								"mock",
+								"pstmn",
+								"io"
+							],
+							"path": [
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "66d57d716316275994569160"
+								}
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "X-RateLimit-Limit",
+							"value": "100"
+						},
+						{
+							"key": "X-RateLimit-Remaining",
+							"value": "99"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 02 Sep 2024 08:11:30 GMT"
+						},
+						{
+							"key": "X-RateLimit-Reset",
+							"value": "1725265591"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "29"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1d-+fAY67Ezt65JS2TEbiytEFs0BWQ\""
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Book not found.\"\n}"
+				}
+			]
+		}
+	]
+}
